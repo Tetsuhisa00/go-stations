@@ -8,11 +8,8 @@ type PanicHandler struct{}
 
 // ServeHTTP implements http.Handler.
 func (p *PanicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/do-panic" {
-		panic("Intentional panic!")
-	}
-	// 他のパスへのリクエストを処理する
 	http.NotFound(w, r)
+	panic("Intentional panic!")
 }
 
 func NewPanicHandler() *PanicHandler {
