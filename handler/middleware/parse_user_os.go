@@ -14,6 +14,7 @@ const uoskey = userOSKey("UserOS")
 type RequestInfo struct {
 	Timestamp time.Time
 	Latency int64
+	Path string
 	OS string
 }
 
