@@ -16,9 +16,9 @@ const uoskey = userOSKey("UserOS")
 
 type RequestInfo struct {
 	Timestamp time.Time `json:"timestamp"`
-	Latency int64 `json:"latency"`
-	Path string `json:"path"`
-	OS string `json:"os"`
+	Latency   int64     `json:"latency"`
+	Path      string    `json:"path"`
+	OS        string    `json:"os"`
 }
 
 func AccessLog(h http.Handler) http.Handler {
@@ -33,25 +33,24 @@ func AccessLog(h http.Handler) http.Handler {
 		r = r.WithContext(ctx)
 		h.ServeHTTP(w, r)
 
-		finish := time.Now()
-		latency := finish.Sub(start).Milliseconds()
+		latency := time.Since(start).Milliseconds()
 
 		userOS, ok := r.Context().Value(UserOSKey("UserOS")).(string)
 		if !ok {
 			userOS = "Unknown"
 		}
 
-		reqInfo := &RequestInfo {
-			Timestamp: finish,
-			Latency: latency,
-			Path: r.URL.Path,
-			OS: userOS,
+		reqInfo := &RequestInfo{
+			Timestamp: start,
+			Latency:   latency,
+			Path:      r.URL.Path,
+			OS:        userOS,
 		}
 
 		reqInfoJson, err := json.Marshal(reqInfo)
 		if err != nil {
 			log.Println(err)
-			return 
+			return
 		}
 		fmt.Println(string(reqInfoJson))
 	}

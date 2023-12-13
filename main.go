@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"time"
-	"net/http"
 	//"github.com/TechBowl-japan/go-stations/handler"
 
 	"github.com/TechBowl-japan/go-stations/db"
@@ -53,14 +53,9 @@ func realMain() error {
 	mux := router.NewRouter(todoDB)
 	http.Handle(port, mux)
 
-
-
-	
-
-
 	// TODO: サーバーをlistenする
 	log.Println("server start at port 8080")
-    log.Fatal(http.ListenAndServe(":8080", mux))
+	log.Fatal(http.ListenAndServe(":8080", mux))
 
 	return nil
 }
