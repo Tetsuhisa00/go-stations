@@ -21,7 +21,7 @@ type RequestInfo struct {
 	OS string `json:"os"`
 }
 
-func ParseUserOS(h http.Handler) http.Handler {
+func AccessLog(h http.Handler) http.Handler {
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
 
