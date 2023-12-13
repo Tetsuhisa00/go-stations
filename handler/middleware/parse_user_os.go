@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -27,22 +28,29 @@ func ParseUserOS(h http.Handler) http.Handler {
 		start := time.Now()
 
 		ua := useragent.Parse(r.UserAgent())
-		ctx := context.WithValue(r.Context(), uoskey, ua.OS)
-		h.ServeHTTP(w, r.WithContext(ctx))
+
+		ctx := context.WithValue(r.Context(), UserOSKey("UserOS"), ua.OS)
+		r = r.WithContext(ctx)
+		h.ServeHTTP(w, r)
 
 		finish := time.Now()
 		latency := finish.Sub(start).Milliseconds()
+
+		userOS, ok := r.Context().Value(UserOSKey("UserOS")).(string)
+		if !ok {
+			userOS = "Unknown"
+		}
 
 		reqInfo := &RequestInfo {
 			Timestamp: finish,
 			Latency: latency,
 			Path: r.URL.Path,
-			OS: ua.OS,
+			OS: userOS,
 		}
 
 		reqInfoJson, err := json.Marshal(reqInfo)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Println(err)
 			return 
 		}
 		fmt.Println(string(reqInfoJson))
