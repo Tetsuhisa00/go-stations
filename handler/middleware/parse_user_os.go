@@ -29,13 +29,13 @@ func AccessLog(h http.Handler) http.Handler {
 
 		ua := useragent.Parse(r.UserAgent())
 
-		ctx := context.WithValue(r.Context(), UserOSKey("UserOS"), ua.OS)
+		ctx := context.WithValue(r.Context(), uoskey, ua.OS)
 		r = r.WithContext(ctx)
 		h.ServeHTTP(w, r)
 
 		latency := time.Since(start).Milliseconds()
 
-		userOS, ok := r.Context().Value(UserOSKey("UserOS")).(string)
+		userOS, ok := r.Context().Value(uoskey).(string)
 		if !ok {
 			userOS = "Unknown"
 		}
