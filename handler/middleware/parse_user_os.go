@@ -11,7 +11,8 @@ import (
 	"github.com/mileusna/useragent"
 )
 
-type userOSKey string 
+type userOSKey string
+
 const uoskey = userOSKey("UserOS")
 
 type RequestInfo struct {
