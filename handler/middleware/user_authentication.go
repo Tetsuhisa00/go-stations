@@ -18,15 +18,6 @@ func UserAuthentication(h http.Handler) http.Handler {
 		if userid != os.Getenv("BASIC_AUTH_USER_ID") || password != os.Getenv("BASIC_AUTH_PASSWORD") {
 			w.WriteHeader(http.StatusUnauthorized)
 			log.Println("Basic認証エラー: ユーザーIDまたはパスワードが間違っています。")
-
-
-		if userid == os.Getenv("BASIC_AUTH_USER_ID") && password == os.Getenv("BASIC_AUTH_PASSWORD") {
-			h.ServeHTTP(w, r)
-		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-			log.Println("Basic認証エラー: ユーザーIDまたはパスワードが間違っています。")
->>>
-			return
 		}
 		h.ServeHTTP(w, r)
 	}
