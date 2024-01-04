@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
-	"fmt"
 
 	//"github.com/TechBowl-japan/go-stations/handler"
 
@@ -58,32 +58,32 @@ func realMain() error {
 	http.Handle(port, mux)
 
 	// TODO: サーバーをlistenする
-	log.Println("server start at port 8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
 
+	// station6
 	srv := &http.Server{
 		Addr:    port,
 		Handler: mux,
 	}
 
+	log.Println("Shutdown Server ...")
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-            log.Fatal(err)
-        }
-    }()
-	
+			fmt.Printf("ListenAndServe error: %v\n", err)
+		}
+	}()
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
 	defer stop()
 
 	<-ctx.Done()
 
-	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctxShutDown); err != nil {
-		log.Fatal(err)
+		fmt.Printf("Server forced to shutdown: %v\n", err)
 		return err
 	}
-	fmt.Println("Server exited successfully!!")
+	fmt.Println("Server exited successfully")
 	return nil
 }
