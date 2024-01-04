@@ -56,7 +56,6 @@ func realMain() error {
 	mux := router.NewRouter(todoDB)
 	http.Handle(port, mux)
 
-	// TODO: サーバーをlistenする
 
 	// station6
 	srv := &http.Server{
@@ -65,7 +64,6 @@ func realMain() error {
 	}
 	var wg sync.WaitGroup
 	
-	log.Println("Shutdown Server")
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
