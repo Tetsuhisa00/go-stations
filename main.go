@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"time"
 
 	//"github.com/TechBowl-japan/go-stations/handler"
@@ -64,9 +65,12 @@ func realMain() error {
 		Addr:    port,
 		Handler: mux,
 	}
-
-	log.Println("Shutdown Server ...")
+	var wg sync.WaitGroup
+	
+	log.Println("Shutdown Server")
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			fmt.Printf("ListenAndServe error: %v\n", err)
 		}
@@ -84,6 +88,9 @@ func realMain() error {
 		fmt.Printf("Server forced to shutdown: %v\n", err)
 		return err
 	}
+
+	wg.Wait()
+	
 	fmt.Println("Server exited successfully")
 	return nil
 }
