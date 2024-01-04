@@ -10,8 +10,6 @@ import (
 	"sync"
 	"time"
 
-	//"github.com/TechBowl-japan/go-stations/handler"
-
 	"github.com/TechBowl-japan/go-stations/db"
 	"github.com/TechBowl-japan/go-stations/handler/router"
 )
@@ -90,7 +88,7 @@ func realMain() error {
 	}
 
 	wg.Wait()
-	
+
 	fmt.Println("Server exited successfully")
 	return nil
 }
