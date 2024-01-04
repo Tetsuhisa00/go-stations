@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"sync"
 	"time"
-	//"github.com/TechBowl-japan/go-stations/handler"
 
 	"github.com/TechBowl-japan/go-stations/db"
 	"github.com/TechBowl-japan/go-stations/handler/router"
@@ -53,9 +56,37 @@ func realMain() error {
 	mux := router.NewRouter(todoDB)
 	http.Handle(port, mux)
 
-	// TODO: サーバーをlistenする
-	log.Println("server start at port 8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
 
+	// station6
+	srv := &http.Server{
+		Addr:    port,
+		Handler: mux,
+	}
+	var wg sync.WaitGroup
+	
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("ListenAndServe error: %v\n", err)
+		}
+	}()
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, os.Kill)
+	defer stop()
+
+	<-ctx.Done()
+
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), 10 * time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctxShutDown); err != nil {
+		fmt.Printf("Server forced to shutdown: %v\n", err)
+		return err
+	}
+
+	wg.Wait()
+
+	fmt.Println("Server exited successfully")
 	return nil
 }
